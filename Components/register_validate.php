@@ -1,71 +1,52 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-if(isset($_POST["reg-finish"]))
-{
-    $uname = $_POST["new-name"];
-    $newemail = $_POST["new-email"];
-    $pwd = $_POST["new-pass"];
-
-    $dbhost = 'localhost';
-    $dbUsername = 'root';
-    $dbpassword = '';
-    $dbname = 'Project_DB';
-
-    //Creating Database connection
-    $conn  = mysqli_connect($dbhost,$dbUsername,$dbpassword,$dbname);
-    if (!$conn)
-    {
-        die('Connection Failed: '.mysqli_connect_error());
+// Generate random user details
+function random_string($length = 8) {
+    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $str = '';
+    for ($i = 0; $i < $length; $i++) {
+        $str .= $chars[rand(0, strlen($chars) - 1)];
     }
-
-    $sql = "SELECT * FROM CUSTOMER WHERE Email = '$newemail'";
-    if($result = mysqli_query($conn, $sql))
-    { 
-        if(mysqli_num_rows($result) == 0)
-        { 
-            $hashedpwd = password_hash($pwd, PASSWORD_DEFAULT);
-            $sql = 'INSERT INTO CUSTOMER (C_name, Email, Pass, Joined, DP_name) VALUES("'.$uname.'","'.$newemail.'","'.$hashedpwd.'","'.date("Y-m-d").'", "../Images/userdefault.png")';
-            mysqli_query($conn, $sql);
-            header("location:login.php");
-        }
-    }
-
-    /*
-    $stmt = mysqli_stmt_init($conn);
-    if (!mysqli_stmt_prepare($stmt, $sql))
-    {
-        header("location:../login.php?error=stmtfailed");
-        exit();
-    }
-
-    
-    mysqli_stmt_bind_param($stmt, "s", $newemail);
-    mysqli_stmt_execute($stmt);
-
-    $resultdata = mysqli_stmt_get_results($stmt);
-
-    mysqli_stmt_close($stmt);
-    if($row = mysqli_fetch_assoc($resultdata))
-    {
-        header("location:../login.php?error=UserIDexists");
-        exit();
-    }
-    else{
-        $sql = 'INSERT INTO CUSTOMER (C_name, Email, Pass, Joined) VALUES(?,?,?);';
-        $stmt = mysqli_stmt_init($conn);
-        if (!mysqli_stmt_prepare($stmt, $sql))
-        {
-            header("location:../login.php?error=stmtfailed");
-            exit();
-        }
-
-        $hashedpwd = password_hash($pwd, PASSWORD_DEFAULT);
-        
-        mysqli_stmt_bind_param($stmt, "sss", $uname, $newemail, $hashedpwd);
-        mysqli_stmt_execute($stmt);
-        mysqli_stmt_close($stmt);
-        header("location:../login.php?error=none");
-        exit();
-    }
-    */
+    return $str;
 }
+
+$uname = "User_" . random_string(5);
+$newemail = "user" . rand(1000,9999) . "@example.com";
+$pwd_plain = random_string(10);
+$hashedpwd = password_hash($pwd_plain, PASSWORD_DEFAULT);
+
+$dbhost = 'localhost';
+$dbUsername = 'root';
+$dbpassword = '';
+$dbname = 'Project_DB';
+
+//Creating Database connection
+$conn  = mysqli_connect($dbhost,$dbUsername,$dbpassword,$dbname);
+if (!$conn) {
+    die('Connection Failed: '.mysqli_connect_error());
+}
+
+// Check if email already exists (very unlikely with random)
+$sql = "SELECT * FROM CUSTOMER WHERE Email = '$newemail'";
+if($result = mysqli_query($conn, $sql)) { 
+    if(mysqli_num_rows($result) == 0) { 
+        $sql = 'INSERT INTO CUSTOMER (C_name, Email, Pass, Joined, DP_name) VALUES("'.$uname.'","'.$newemail.'","'.$hashedpwd.'","'.date("Y-m-d").'", "../Images/userdefault.png")';
+        if(mysqli_query($conn, $sql)) {
+            echo "<h2>Random user created!</h2>";
+            echo "<b>Name:</b> $uname<br>";
+            echo "<b>Email:</b> $newemail<br>";
+            echo "<b>Password:</b> $pwd_plain<br>";
+            echo "<a href='login.php'>Go to Login</a>";
+        } else {
+            echo "Error inserting user: " . mysqli_error($conn);
+        }
+    } else {
+        echo "Randomly generated email already exists. Please refresh to try again.";
+    }
+} else {
+    echo "Error checking email: " . mysqli_error($conn);
+}
+?>

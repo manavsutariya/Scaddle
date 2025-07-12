@@ -1,113 +1,123 @@
 # Quora Clone
 
-Quora is a well question forum which has millions of users, and questions, answers and posts on 
-almost every topic in the world covering nearly every question. Such forums can provide easy 
-access to information which is either not readily available or if available is hard to comprehend. 
+A web-based Q&A platform inspired by Quora, built with PHP, MySQL, HTML, CSS, and JavaScript.
 
-In this project, we have attempted to recreate this forum website as a web application to better 
-understand the working of a real-world entity implementing both the front end and the back end 
-part to learn to implement these technologies for a project trying to make as less difference in our 
-clone as possible.
+## Features
 
-### Technologies Used
+- User registration and login (with email)
+- Ask and answer questions
+- User profile with display picture
+- Categories for questions
+- Responsive UI with Bootstrap
+- Passwords securely hashed
 
-- HTML
-- CSS
-- JS
-- Bootstrap
-- PHP
-- MySQLi
+## Tech Stack
 
-### Tools used
+- **Backend:** PHP (Procedural)
+- **Frontend:** HTML, CSS, JavaScript
+- **Database:** MySQL
+- **Other:** Bootstrap 4, PHPMailer
 
-- VS Code
-- Git and GitHub
-- XAMPP Server
-- PHP Mailer
-- MySQL database
+## Setup Instructions
 
-### Features
+### 1. Prerequisites
 
-The specific options that we will be provided in our application are: 
-- Register as a new user
-- Login into the application
-- Read other people’s questions
-- Choose from a variety of topics
-- Post a question yourself, attach an image if required
-- Answer your peer’s questions
-- Manage your profile details
-- Contact us in case of any problems
+- XAMPP or any LAMP/WAMP stack (with PHP >= 7.0 and MySQL)
+- Composer (for PHPMailer, if needed)
 
-### Future Scope
+### 2. Clone the Repository
 
-The application is still in early stages, it can be customized according to usage. We plan on hosting 
-it as “Aste”, a platform for college students like us to post queries and answer and help out our 
-peers efficiently. It can be hosted after adding further features like filtering questions by favorite 
-categories, not allowing a repeated question, tagging an answer, enhancing the profile page like 
-visiting another user, following them etc, allowing image addition in answers as well. We can also 
-add posts which will be different from question in respect that they are providing information 
-instead of asking them. We can also add the option of like and comment in questions and post and 
-implement machine learning algorithms for better results and searches. After hosting it can be used 
-for daily purposes to interact with our seniors or alumni or simply help out our classmates and 
-juniors. This can also be used as a place for collaboration of like-minded people to meet and build 
-projects and indulge into research with each other.
+```
+git clone <repo-url>
+```
 
+### 3. Place in Web Server Directory
 
+- Copy the project folder (`WP-Project-Quora-Clone`) to your XAMPP `htdocs` directory (or equivalent).
 
-### Project Demo
+### 4. Database Setup
 
-  
-<img  src="Demo Images/ERD.png">  
-<p align="center" > ER diagram </p>
- <hr>
- 
-<img src="Demo Images/login.png">
-<p align="center" >Landing login page </p>
- <hr>
+- Start Apache and MySQL from XAMPP.
+- Open phpMyAdmin and run the following SQL to create the database and tables:
 
-<img  src="Demo Images/signup.png">
-<p align="center" >Register</p>
-<hr>
- 
-<img  src="Demo Images/signup2.png">
-<p align="center" >Register </p>
- <hr>
- 
-<img  src="Demo Images/home1.png"> 
-<p align="center" >Home page</p>
-<hr>
+```sql
+CREATE DATABASE IF NOT EXISTS Project_DB;
+USE Project_DB;
 
-<img  src="Demo Images/home2.png"> 
-<p align="center" >Home page</p>
-<hr>
+CREATE TABLE IF NOT EXISTS CUSTOMER (
+    Cid INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    C_name VARCHAR(20) NOT NULL,
+    Email VARCHAR(40) UNIQUE NOT NULL,
+    Pass VARCHAR(255) NOT NULL,
+    works VARCHAR(40),
+    study VARCHAR(40),
+    lives VARCHAR(40),
+    Joined DATE,
+    DP_name VARCHAR(255),
+    Fav_cats VARCHAR(255)
+);
 
-<img  src="Demo Images/navbar.png">
-<p align="center" >Navbar</p>
- <hr>
+CREATE TABLE IF NOT EXISTS QUESTION (
+    Qid INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Cid INT(6) UNSIGNED,
+    Ques_desc TEXT,
+    Asked_date DATE,
+    Q_name VARCHAR(255) NOT NULL,
+    Q_cat VARCHAR(255) NOT NULL,
+    FOREIGN KEY (Cid) REFERENCES CUSTOMER(Cid)
+);
 
-<img  src="Demo Images/askQues.png"> 
-<p align="center" >Ask a question</p>
- <hr>
+CREATE TABLE IF NOT EXISTS ANSWER (
+    Aid INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    Qid INT(6) UNSIGNED,
+    Cid INT(6) UNSIGNED,
+    ans_body TEXT NOT NULL,
+    Answered_date DATE,
+    FOREIGN KEY (Cid) REFERENCES CUSTOMER(Cid),
+    FOREIGN KEY (Qid) REFERENCES QUESTION(Qid) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
-<img  src="Demo Images/thread1.png">
-<p align="center" >Question thread</p>
-<hr>
+CREATE TABLE IF NOT EXISTS CATEGORIES (
+    Catid INT(6) PRIMARY KEY,
+    Cat_name VARCHAR(50),
+    Cat_img VARCHAR(256)
+);
 
-<img  src="Demo Images/thread2.png">
-<p align="center" >Question thread with answers</p>
-<hr>
+INSERT INTO CATEGORIES VALUES
+    (1, 'Python', '../Images/python.png'),
+    (2, 'Javascript', '../Images/js.png'),
+    (3, 'Java', '../Images/java.png'),
+    (4, 'PHP', '../Images/php.png');
+```
 
-<img  src="Demo Images/profile1.png">
-<p align="center" >Profile page</p>
-<hr>
+Alternatively, running the project will auto-create the database and tables via `Components/db_prep.php`.
 
-<img src="Demo Images/profile2.png">
-<p align="center" >Profile changing options</p>
-<hr>
+### 5. Configure PHPMailer (Optional)
 
+- If you want to enable email features, set up credentials in `Components/credentials.php`.
 
+### 6. Run the Project
 
-### Contributors
-- [Aman Agrawal](https://github.com/AmanAgrawal21900)
-- [Pushpit Jain](https://github.com/pushpit-J19)
-- [Rathin Nair](https://github.com/rathin-nair)
+- Open your browser and go to: `http://localhost/WP-Project-Quora-Clone/Components/login.php`
+
+## Usage
+
+- Register a new account or use the random user generator at `register_validate.php` for testing.
+- Ask questions, answer others, and explore categories.
+
+## Folder Structure
+
+- `Components/` — PHP backend files
+- `CSS/` — Stylesheets
+- `JS/` — JavaScript files
+- `Images/` — Images and user DPs
+- `PHPMailer/` — Email library
+
+## Credits
+
+- Developed by Aman Agrawal, Pushpit Jain, and Rathin Nair
+- Inspired by [Quora](https://quora.com)
+
+---
+
+For any issues, please open an issue or contact the maintainers.
