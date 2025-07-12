@@ -1,4 +1,4 @@
-# Half hour
+# StackIt – A Minimal Q&A Forum Platform
 
 A web-based Q&A platform inspired by Quora, built with PHP, MySQL, HTML, CSS, and JavaScript.
 
