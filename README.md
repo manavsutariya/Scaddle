@@ -1,4 +1,4 @@
-# Quora Clone
+# Half hour
 
 A web-based Q&A platform inspired by Quora, built with PHP, MySQL, HTML, CSS, and JavaScript.
 
